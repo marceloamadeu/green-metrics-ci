@@ -1,28 +1,38 @@
 name: 01-Baseline (Sequencial)
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+
 jobs:
-  test:
+  test-baseline:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.12.3'
-      - run: pip install pytest
-      
-      - name: Iniciar Medição
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          # Usa o pip do sistema ou do venv se estiver ativo
+          pip install -r requirements.txt
+
+      - name: Iniciar Medição (Eco-CI)
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: start-measurement
-          
-      - name: Rodar Testes Sequencial
-        run: pytest src/test_app.py
-        
+          label: 'baseline-run'
+
+      - name: Rodar Testes (Sequencial)
+        run: |
+          # Roda todos os testes um após o outro
+          pytest src/test_app.py
+
       - name: Coletar Métricas
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: get-measurement
-          label: 'baseline'
-      - uses: green-coding-solutions/eco-ci-energy-estimation@v3
+          label: 'baseline-tests'
+          
+      - name: Exibir Resultados
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: display-results
+          json-output: true # Salva JSON para ser coletado depois

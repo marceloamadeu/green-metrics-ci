@@ -1,6 +1,40 @@
+import math
+import random
 import time
 
-def processamento_pesado(n):
-    # Simula uma carga de CPU e Tempo
-    time.sleep(0.1) 
-    return n * n
+def cpu_intensive_task(n):
+    """
+    Calcula o fatorial de n. 
+    Gera carga de CPU pura.
+    """
+    if n < 0:
+        raise ValueError("Número deve ser não-negativo")
+    # Loop artificial para garantir que gaste tempo de CPU
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+def memory_intensive_task(size):
+    """
+    Cria e ordena uma lista grande.
+    Gera carga de Memória e CPU.
+    """
+    # Gera uma lista grande de números aleatórios
+    data = [random.random() for _ in range(size)]
+    # Ordena a lista (Timsort é O(n log n))
+    return sorted(data)
+
+def io_simulation(duration):
+    """
+    Simula uma espera de I/O (ex: banco de dados ou rede).
+    Gera tempo de espera sem alto consumo de CPU.
+    """
+    time.sleep(duration)
+    return "Done"
+
+if __name__ == "__main__":
+    # Apenas um teste rápido se rodado diretamente
+    print("Iniciando teste de carga...")
+    cpu_intensive_task(5000)
+    print("Fim.")

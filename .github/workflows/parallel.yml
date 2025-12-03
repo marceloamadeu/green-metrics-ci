@@ -1,28 +1,36 @@
-name: 02-Paralelo (Otimizado)
-on: workflow_dispatch
+name: 02-Paralelo (xdist)
+on: 
+  workflow_dispatch:
+
 jobs:
-  test:
+  test-parallel:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.12.3'
-      - run: pip install pytest pytest-xdist # Instala plugin de paralelo
-      
-      - name: Iniciar Medição
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Iniciar Medição (Eco-CI)
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: start-measurement
-          
-      - name: Rodar Testes em Paralelo (4 núcleos)
-        run: pytest -n 4 src/test_app.py
-        
+          label: 'parallel-run'
+
+      - name: Rodar Testes (Paralelo)
+        run: |
+          # -n auto usa todos os núcleos disponíveis na sua CPU
+          pytest -n auto src/test_app.py
+
       - name: Coletar Métricas
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: get-measurement
-          label: 'parallel'
-      - uses: green-coding-solutions/eco-ci-energy-estimation@v3
+          label: 'parallel-tests'
+          
+      - name: Exibir Resultados
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: display-results
+          json-output: true

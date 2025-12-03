@@ -1,29 +1,39 @@
-name: 03-TIA (Seleção Inteligente)
-on: workflow_dispatch
+name: TIA Energy Optimization Protocol
+
+on: [push, pull_request]
+
 jobs:
-  test:
-    runs-on: self-hosted
+  green-test-execution:
+    name: Green Test Runner
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
         with:
-          python-version: '3.12.3'
-      - run: pip install pytest
-      
-      - name: Iniciar Medição
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+          fetch-depth: 0 # Necessário para o testmon analisar histórico git
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v4
         with:
-          task: start-measurement
-          
-      - name: Rodar TIA (Apenas testes pares)
-        # Simula o TIA rodando apenas testes onde a entrada é par (metade da suíte)
-        run: pytest -k "2" src/test_app.py 
-        
-      - name: Coletar Métricas
-        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+          python-version: '3.10'
+          cache: 'pip' # Cache de dependências pip para economizar energia de download
+
+      # CORREÇÃO CRÍTICA: Espaço adicionado em 'path'
+      # Isso habilita a persistência da inteligência da TIA
+      - name: Cache Testmon Database
+        uses: actions/cache@v3
         with:
-          task: get-measurement
-          label: 'tia'
-      - uses: green-coding-solutions/eco-ci-energy-estimation@v3
-        with:
-          task: display-results
+          path: .testmondata 
+          key: testmon-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            testmon-${{ runner.os }}-
+
+      - name: Install System Dependencies
+        run: pip install -r requirements.txt pytest pytest-testmon
+
+      - name: Execute Orchestrator
+        # Invoca o script Python corrigido
+        run: python scripts/orchestrator.py
+        env:
+          # Token necessário se o orquestrador interagir com a API do GitHub
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
