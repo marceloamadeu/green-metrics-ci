@@ -1,7 +1,12 @@
-flask==3.0.0 
-pytest==7.4.3 
-pytest-testmon==2.1.1 
-pytest-xdist==3.5.0 
-coverage==7.3.2 
-gunicorn==21.2.0 
-requests==2.31.0
+# Testing Framework
+pytest==7.4.3
+pytest-xdist==3.5.0        # Paralelização
+pytest-testmon==2.1.1      # Test Impact Analysis
+pytest-cov==4.1.0          # Cobertura de código
+
+# Para análise de dados (opcional, para scripts/metrics.py)
+pandas==2.1.4
+matplotlib==3.8.2
+seaborn==0.13.0
+scipy==1.11.4
+numpy==1.26.2
