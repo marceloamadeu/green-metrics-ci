@@ -1,8 +1,14 @@
 import pytest
-from src.app import cpu_intensive_task, memory_intensive_task, io_simulation
+import sys
+from pathlib import Path
+
+# Adiciona a pasta src ao path para imports funcionarem
+sys.path.insert(0, str(Path(__file__).parent))
+
+from app import cpu_intensive_task, memory_intensive_task, io_simulation
 
 # Testes de CPU (Carga Alta)
-@pytest.mark.parametrize("n", )
+@pytest.mark.parametrize("n", [100, 500, 1000])
 def test_cpu_factorial(n):
     result = cpu_intensive_task(n)
     assert result > 0
@@ -13,11 +19,11 @@ def test_cpu_error():
         cpu_intensive_task(-1)
 
 # Testes de Memória
-@pytest.mark.parametrize("size", )
+@pytest.mark.parametrize("size", [10000, 50000, 100000])
 def test_memory_sort(size):
     sorted_list = memory_intensive_task(size)
     assert len(sorted_list) == size
-    assert sorted_list <= sorted_list[-1]
+    assert sorted_list[0] <= sorted_list[-1]
 
 # Teste de I/O
 def test_io_wait():

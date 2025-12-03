@@ -25,8 +25,10 @@ jobs:
 
       - name: Rodar Testes (Paralelo)
         run: |
+          # Adiciona o diretório raiz ao PYTHONPATH
+          export PYTHONPATH=$GITHUB_WORKSPACE:$PYTHONPATH
           # -n auto usa todos os núcleos disponíveis
-          pytest -n auto src/test_app.py
+          pytest -n auto src/test_app.py -v
 
       - name: Coletar Métricas
         uses: green-coding-solutions/eco-ci-energy-estimation@v4

@@ -28,8 +28,8 @@ jobs:
 
       - name: Rodar Testes (Sequencial)
         run: |
-          # Executa todos os testes sequencialmente
-          pytest src/test_app.py
+          # Executa todos os testes sequencialmente usando módulo
+          python -m pytest src/test_app.py -v
 
       - name: Coletar Métricas
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
