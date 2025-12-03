@@ -1,0 +1,29 @@
+name: 03-TIA (Seleção Inteligente)
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install pytest
+      
+      - name: Iniciar Medição
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: start-measurement
+          
+      - name: Rodar TIA (Apenas testes pares)
+        # Simula o TIA rodando apenas testes onde a entrada é par (metade da suíte)
+        run: pytest -k "2" src/test_app.py 
+        
+      - name: Coletar Métricas
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: get-measurement
+          label: 'tia'
+      - uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: display-results
