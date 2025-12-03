@@ -1,6 +1,6 @@
 name: Experimento de Energia
 on: 
-  workflow_dispatch: # Permite disparar manualmente ou via script
+  workflow_dispatch:
     inputs:
       strategy:
         description: 'Estratégia de Teste (baseline, tia, parallel)'
@@ -9,8 +9,8 @@ on:
 
 jobs:
   energy-test:
-    runs-on: self-hosted # Vai rodar na sua máquina
-    container: maven:3.8-openjdk-11 # Garante ambiente limpo (Docker)
+    runs-on: self-hosted
+    # container: maven:3.8-openjdk-11  <-- REMOVA ESTA LINHA
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -26,6 +26,7 @@ jobs:
 
       - name: Rodar Testes (Paralelo)
         if: ${{ github.event.inputs.strategy == 'parallel' }}
+        # Ajuste o threadCount conforme seu processador (ex: 4)
         run: mvn test -Dparallel=methods -DthreadCount=4
 
       - name: Coletar Métricas
