@@ -9,6 +9,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Python (System)
+        run: |
+          python3 -m venv venv
+          echo "$GITHUB_WORKSPACE/venv/bin" >> $GITHUB_PATH
+
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
@@ -20,7 +25,7 @@ jobs:
 
       - name: Rodar Testes (Paralelo)
         run: |
-          # -n auto usa todos os núcleos disponíveis na sua CPU
+          # -n auto usa todos os núcleos disponíveis
           pytest -n auto src/test_app.py
 
       - name: Coletar Métricas

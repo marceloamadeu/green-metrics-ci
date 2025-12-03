@@ -1,70 +1,49 @@
-import os
-import sys
 import subprocess
 import time
+import sys
+import os
 
-def main():
-    print("Initializing Green Metrics Orchestration...")
+# Configurações
+# Substitua pelo seu usuário/repo se necessário, ou o GH CLI infere
+WORKFLOWS = [
+    "baseline.yml",
+    "parallel.yml",
+    "tia.yml"
+]
+REPETITIONS = 10 # 10 repetições como pedido pelo professor
+
+def run_workflow(workflow_file):
+    print(f"🚀 Disparando workflow: {workflow_file}...")
     
-    # Definição de Arquivos de Saída
-    results_xml = "test-results.xml"
-    
-    # CORREÇÃO CRÍTICA: Atribuição completa da variável 'cmd'
-    # Utilizando lista para segurança e clareza.
-    # --testmon: Ativa a seleção inteligente de testes
-    # --junitxml: Gera relatório XML para consumo posterior
-    cmd = [
-        "pytest", 
-        "--testmon", 
-        f"--junitxml={results_xml}",
-        "-vv"
-    ]
-    
-    start_time = time.time()
+    # CORREÇÃO: Comando definido como lista de strings
+    cmd = ["gh", "workflow", "run", workflow_file]
     
     try:
-        print(f"Executing Command: {' '.join(cmd)}")
-        
-        # Execução síncrona com captura de output
-        # Em uma implementação avançada, usaríamos Popen para monitoramento paralelo
-        result = subprocess.run(
-            cmd,
-            check=True,         # Levanta exceção se o pytest falhar (testes quebrados)
-            capture_output=True,
-            text=True,
-            env=os.environ.copy() # Garante que variáveis de ambiente do CI passem
-        )
-        
-        duration = time.time() - start_time
-        print(f"Tests Completed Successfully in {duration:.2f}s")
-        print("Output snippet:", result.stdout[:500])
-        
-        # Gera o resumo Markdown para o GitHub Actions
-        generate_summary(duration, "Success")
-
+        # check=True lança erro se o comando falhar
+        subprocess.run(cmd, check=True)
+        print(f"✅ {workflow_file} iniciado com sucesso.")
     except subprocess.CalledProcessError as e:
-        duration = time.time() - start_time
-        print(f"Test Execution Failed after {duration:.2f}s")
-        print("Error Output:", e.stderr)
+        print(f"❌ Erro ao iniciar {workflow_file}: {e}")
+    except FileNotFoundError:
+        print("❌ Erro: 'gh' CLI não encontrado. Instale o GitHub CLI.")
+        sys.exit(1)
+
+def main():
+    print(f"=== Iniciando Experimento Green Metrics: {REPETITIONS} repetições ===")
+    
+    for i in range(1, REPETITIONS + 1):
+        print(f"\n--- RODADA {i}/{REPETITIONS} ---")
         
-        generate_summary(duration, "Failure")
-        sys.exit(1) # Falha o pipeline explicitamente
+        for wf in WORKFLOWS:
+            run_workflow(wf)
+            
+            # Intervalo de resfriamento (Cooldown)
+            # Importante para Green Software para evitar thermal throttling na CPU
+            print("⏳ Aguardando 60s para resfriamento e conclusão...")
+            time.sleep(60)
 
-def generate_summary(duration, status):
-    """Escreve o resumo da execução no GITHUB_STEP_SUMMARY"""
-    summary_path = os.getenv("GITHUB_STEP_SUMMARY")
-    if summary_path:
-        markdown = f"""
-### 🌿 Green Metrics CI Report
-
-| Metric | Value |
-| :--- | :--- |
-| **Status** | {status} |
-| **Execution Time** | {duration:.2f}s |
-| **Optimization Strategy** | Test Impact Analysis (TIA) |
-        """
-        with open(summary_path, "a") as f:
-            f.write(markdown)
+    print("\n=== Experimento Finalizado ===")
+    print("Vá para a aba 'Actions' no GitHub para ver os resultados de energia.")
 
 if __name__ == "__main__":
     main()

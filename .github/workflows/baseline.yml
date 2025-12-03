@@ -9,9 +9,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup Python (System)
+        run: |
+          # Usa o python do sistema e cria venv para isolamento
+          python3 -m venv venv
+          echo "$GITHUB_WORKSPACE/venv/bin" >> $GITHUB_PATH
+
       - name: Install Dependencies
         run: |
-          # Usa o pip do sistema ou do venv se estiver ativo
+          pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Iniciar Medição (Eco-CI)
@@ -22,7 +28,7 @@ jobs:
 
       - name: Rodar Testes (Sequencial)
         run: |
-          # Roda todos os testes um após o outro
+          # Executa todos os testes sequencialmente
           pytest src/test_app.py
 
       - name: Coletar Métricas
@@ -35,4 +41,4 @@ jobs:
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: display-results
-          json-output: true # Salva JSON para ser coletado depois
+          json-output: true

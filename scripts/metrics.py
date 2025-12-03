@@ -1,12 +1,15 @@
 import json
 import glob
-import pandas as pd
+import os
 
-def process_results():
-    print("Processando resultados de energia...")
-    # Lógica futura: Ler arquivos JSON baixados do Eco-CI
-    # Calcular médias e EDP
+def process_metrics():
+    # Pasta onde você vai descompactar os artefatos baixados do GitHub
+    data_dir = "data/raw"
+    
+    print(f"Lendo métricas de: {data_dir}")
+    # Lógica para ler todos os JSONs e calcular médias
+    # (Implementaremos isso na fase de análise de dados)
     pass
 
 if __name__ == "__main__":
-    process_results()
+    process_metrics()
