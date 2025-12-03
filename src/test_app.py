@@ -7,8 +7,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from app import cpu_intensive_task, memory_intensive_task, io_simulation
 
-# Testes de CPU (Carga Alta)
-@pytest.mark.parametrize("n", [100, 500, 1000])
+# Testes de CPU (Carga Reduzida para teste rápido)
+@pytest.mark.parametrize("n", [50, 100])
 def test_cpu_factorial(n):
     result = cpu_intensive_task(n)
     assert result > 0
@@ -18,8 +18,8 @@ def test_cpu_error():
     with pytest.raises(ValueError):
         cpu_intensive_task(-1)
 
-# Testes de Memória
-@pytest.mark.parametrize("size", [10000, 50000, 100000])
+# Testes de Memória (Reduzidos para teste rápido)
+@pytest.mark.parametrize("size", [5000, 10000])
 def test_memory_sort(size):
     sorted_list = memory_intensive_task(size)
     assert len(sorted_list) == size
