@@ -1,0 +1,40 @@
+name: Experimento de Energia
+on: 
+  workflow_dispatch: # Permite disparar manualmente ou via script
+    inputs:
+      strategy:
+        description: 'Estratégia de Teste (baseline, tia, parallel)'
+        required: true
+        default: 'baseline'
+
+jobs:
+  energy-test:
+    runs-on: self-hosted # Vai rodar na sua máquina
+    container: maven:3.8-openjdk-11 # Garante ambiente limpo (Docker)
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Iniciar Medição de Energia (Eco-CI)
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: start-measurement
+
+      - name: Rodar Testes (Baseline)
+        if: ${{ github.event.inputs.strategy == 'baseline' }}
+        run: mvn test
+
+      - name: Rodar Testes (Paralelo)
+        if: ${{ github.event.inputs.strategy == 'parallel' }}
+        run: mvn test -Dparallel=methods -DthreadCount=4
+
+      - name: Coletar Métricas
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: get-measurement
+          label: 'fase-de-testes'
+          
+      - name: Exibir Resultados
+        uses: green-coding-solutions/eco-ci-energy-estimation@v3
+        with:
+          task: display-results
