@@ -57,3 +57,13 @@ jobs:
         with:
           task: display-results
           json-output: true
+
+      - name: Salvar Resultados como Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eco-ci-tia-${{ github.run_id }}
+          path: |
+            /tmp/eco-ci/
+            .eco-ci-output.json
+          retention-days: 30
