@@ -17,7 +17,7 @@ from app import cpu_intensive_task, memory_intensive_task, io_simulation
 # =============================================================================
 
 # Testes de CPU (Carga Média)
-@pytest.mark.parametrize("n", [100, 300, 500, 800])
+@pytest.mark.parametrize("n", [500, 1000, 1500, 2000])
 def test_cpu_factorial(n):
     """
     Testes de CPU com carga média.
@@ -47,7 +47,7 @@ def test_memory_sort(size):
         assert sorted_list[i] <= sorted_list[i + 1]
 
 # Testes de I/O
-@pytest.mark.parametrize("duration", [0.2, 0.4, 0.6])
+@pytest.mark.parametrize("duration", [0.05, 0.1])
 def test_io_wait(duration):
     """
     Simula diferentes latências de I/O.

@@ -11,8 +11,8 @@ WORKFLOWS = [
     "parallel_simple.yml",
     "tia_simple.yml"
 ]
-REPETITIONS = 5  # Reduzido de 10 para 5 (teste rápido)
-COOLDOWN = 20    # Reduzido de 60s para 20s
+REPETITIONS = 10  # Para n=10 (validade estatística)
+COOLDOWN = 60     # Maior cooldown para estabilidade
 
 # ========================================
 # Para o experimento real, use:
