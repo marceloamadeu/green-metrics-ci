@@ -1,0 +1,55 @@
+name: 03-TIA-Simple
+on: 
+  workflow_dispatch:
+
+jobs:
+  test-tia:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restaurar Cache TIA
+        uses: actions/cache/restore@v3
+        with:
+          path: .testmondata
+          key: testmon-${{ runner.os }}-${{ github.ref }}
+          restore-keys: |
+            testmon-${{ runner.os }}-
+
+      - name: Setup Python
+        run: |
+          python3 -m venv venv
+          echo "$GITHUB_WORKSPACE/venv/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Rodar TIA e Medir Tempo
+        run: |
+          echo "========================================" | tee metrics.txt
+          echo "Estratégia: TIA" | tee -a metrics.txt
+          echo "Run ID: ${{ github.run_id }}" | tee -a metrics.txt
+          echo "Timestamp: $(date -Iseconds)" | tee -a metrics.txt
+          echo "========================================" | tee -a metrics.txt
+          
+          # Medir tempo e recursos
+          /usr/bin/time -v python -m pytest --testmon src/test_app.py -v 2>&1 | tee -a metrics.txt
+          
+          echo "========================================" | tee -a metrics.txt
+
+      - name: Salvar Cache TIA
+        uses: actions/cache/save@v3
+        with:
+          path: .testmondata
+          key: testmon-${{ runner.os }}-${{ github.ref }}-${{ github.run_id }}
+
+      - name: Salvar Métricas
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-tia-${{ github.run_id }}
+          path: metrics.txt
+          retention-days: 30

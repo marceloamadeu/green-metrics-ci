@@ -7,9 +7,9 @@ import os
 # CONFIGURAÇÃO PARA TESTE RÁPIDO (10 MIN)
 # ========================================
 WORKFLOWS = [
-    "baseline.yml",
-    "parallel.yml",
-    "tia.yml"
+    "baseline_simple.yml",
+    "parallel_simple.yml",
+    "tia_simple.yml"
 ]
 REPETITIONS = 3  # Reduzido de 10 para 3 (teste rápido)
 COOLDOWN = 20    # Reduzido de 60s para 20s

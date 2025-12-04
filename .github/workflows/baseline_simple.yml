@@ -1,0 +1,44 @@
+name: 01-Baseline-Simple
+on: 
+  workflow_dispatch:
+
+jobs:
+  test-baseline:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        run: |
+          python3 -m venv venv
+          echo "$GITHUB_WORKSPACE/venv/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Rodar Testes e Medir Tempo
+        run: |
+          echo "========================================" | tee metrics.txt
+          echo "Estratégia: BASELINE" | tee -a metrics.txt
+          echo "Run ID: ${{ github.run_id }}" | tee -a metrics.txt
+          echo "Timestamp: $(date -Iseconds)" | tee -a metrics.txt
+          echo "========================================" | tee -a metrics.txt
+          
+          # Medir tempo e recursos
+          /usr/bin/time -v python -m pytest src/test_app.py -v 2>&1 | tee -a metrics.txt
+          
+          echo "========================================" | tee -a metrics.txt
+          echo "CPU Info:" | tee -a metrics.txt
+          nproc | tee -a metrics.txt
+          
+          echo "Testes executados:" | tee -a metrics.txt
+          python -m pytest src/test_app.py --collect-only -q | wc -l | tee -a metrics.txt
+
+      - name: Salvar Métricas
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-baseline-${{ github.run_id }}
+          path: metrics.txt
+          retention-days: 30

@@ -1,0 +1,40 @@
+name: 02-Parallel-Simple
+on: 
+  workflow_dispatch:
+
+jobs:
+  test-parallel:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        run: |
+          python3 -m venv venv
+          echo "$GITHUB_WORKSPACE/venv/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Rodar Testes Paralelos e Medir Tempo
+        run: |
+          echo "========================================" | tee metrics.txt
+          echo "Estratégia: PARALLEL" | tee -a metrics.txt
+          echo "Run ID: ${{ github.run_id }}" | tee -a metrics.txt
+          echo "Timestamp: $(date -Iseconds)" | tee -a metrics.txt
+          echo "Workers: auto ($(nproc) cores)" | tee -a metrics.txt
+          echo "========================================" | tee -a metrics.txt
+          
+          # Medir tempo e recursos
+          /usr/bin/time -v python -m pytest -n auto src/test_app.py -v 2>&1 | tee -a metrics.txt
+          
+          echo "========================================" | tee -a metrics.txt
+
+      - name: Salvar Métricas
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-parallel-${{ github.run_id }}
+          path: metrics.txt
+          retention-days: 30
