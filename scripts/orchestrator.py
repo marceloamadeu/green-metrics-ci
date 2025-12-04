@@ -11,7 +11,7 @@ WORKFLOWS = [
     "parallel_simple.yml",
     "tia_simple.yml"
 ]
-REPETITIONS = 3  # Reduzido de 10 para 3 (teste rápido)
+REPETITIONS = 5  # Reduzido de 10 para 5 (teste rápido)
 COOLDOWN = 20    # Reduzido de 60s para 20s
 
 # ========================================
